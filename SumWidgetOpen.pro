@@ -10,22 +10,29 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
+    scandirectory.cpp \
     widget.cpp
 
 HEADERS += \
+    scandirectory.h \
     widget.h
 
 INCLUDEPATH +=/home/semen/qtProjects/QtProjects/SumWidget/
+INCLUDEPATH +=/home/semen/qtProjects/QtProjects/FileWidget/
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+# Default rules for deployment.S
+#qnx: target.path = /tmp/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+#!isEmpty(target.path): INSTALLS += target
 
-unix:!macx: LIBS += -L$$PWD/../build-SumWidget-Desktop_Qt_5_12_10_GCC_64bit-Debug/ -lSumWidget
+#unix:!macx: LIBS += -L$$PWD/../build-SumWidget-Desktop_Qt_5_12_10_GCC_64bit-Debug/ -lSumWidget
 
-INCLUDEPATH += $$PWD/../SumWidget
-DEPENDPATH += $$PWD/../SumWidget
+#INCLUDEPATH += $$PWD/../SumWidget
+#DEPENDPATH += $$PWD/../SumWidget
 
+LIBS += -lboost_filesystem
+#LIBS += -lboost_system
 LIBS += -ldl
+
+FORMS +=
 

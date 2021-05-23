@@ -7,10 +7,10 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     Widget w;
     w.show();
-    qDebug() << w.connectionToTheSumWidget();
+    qDebug() << w.connectionToThelib();
 
-    w.showInputWidget();
+//    w.showInputWidget();
 
-    w.closeLib();
+//    w.closeLib();
     return a.exec();
 }

@@ -3,10 +3,22 @@
 
 #include <QWidget>
 #include <stdio.h>
+#include <iostream>
+#include <exception>
+#include <QMessageBox>
 #include <dlfcn.h>
 #include <QDebug>
 
-#include "inputwidget.h"
+#include <QPushButton>
+#include <QLabel>
+#include <QLineEdit>
+#include <QGridLayout>
+#include <QFileSystemModel>
+#include <QTreeView>
+
+#include "/home/semen/qtProjects/QtProjects/SumWidget/inputwidget.h"
+#include "/home/semen/qtProjects/QtProjects/FileWidget/inputwidget.h"
+#include "scandirectory.h"
 
 class Widget : public QWidget
 {
@@ -15,17 +27,39 @@ class Widget : public QWidget
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
-    bool connectionToTheSumWidget();
+
+    bool connectionToThelib(/*QString path*/);
     bool closeLib();
     void showInputWidget();
+public slots:
+    void startScanPressed();
 
 private:
+    QPushButton * m_connectToTheLib;
+    QPushButton * m_disconnectFromTheLib;
+    QPushButton * m_startScan;
+    QLabel      * m_pathForScan;
+    QLineEdit   * m_inputPathForScan;
+    QGridLayout * m_layOut;
+
+    QFileSystemModel * m_fileModel;
+    QTreeView        * m_treeView;
+
+
     void* m_lib;
-    InputWidget* m_inputWidget = nullptr;
+    void* m_libInfo;
+    InputSumWidget* m_sumWidget = nullptr;
+    InputFileWidget * m_fileWidget = nullptr;
+
+
 
 private:
     bool getSumWidgetInstance();
     bool releaseSumWidgetInstance();
+    void memoryAllocation();
+    void setUpWidgets();
+    void handle_eptr(std::exception_ptr eptr);
+    void setUpFileSystemModel(std::list<std::string> libsPaths, QString path);
 
 };
 #endif // WIDGET_H
