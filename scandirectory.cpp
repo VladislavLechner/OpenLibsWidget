@@ -21,7 +21,7 @@ bool ScanDirectory::checkPath(std::string path)
     return true;
 }
 
-std::list<std::string> ScanDirectory::libsPaths() const
+std::pair< std::list<std::string>, std::list<std::string>> ScanDirectory::libsPaths() const
 {
     return m_libsPaths;
 }
@@ -33,14 +33,11 @@ void ScanDirectory::startScaning(std::string path)
         size_t pos = it->path().string().rfind(".");
         if (pos > it->path().string().size())
             continue;
-        std::string temp = it->path().string().substr(pos, it->path().string().size() - pos);
-        std::string t = it->path().string();
         if (it->path().string().substr(pos, it->path().string().size() - pos) == ".so")
         {
+            m_libsPaths.first.push_back(it->path().string());
             dlInfo(it->path().string());
-            m_libsPaths.push_back(it->path().string());
         }
-
     }
 }
 
@@ -50,14 +47,31 @@ bool ScanDirectory::dlInfo(std::string path)
     lib = dlopen(path.c_str(), RTLD_NOW);
     if (lib == nullptr)
     {
-        std::cout << "Cannot load library: " << dlerror() << '\n';
+        throw std::runtime_error(dlerror());
+//        std::cerr << "Cannot load library: " << dlerror() << '\n';
         return false;
     }
     dlerror();
 
-//    void* info;
+    typedef std::string *(*GetInfo)();
+    GetInfo info = nullptr;
 
-//    info = dlsym(lib,)
+    info = reinterpret_cast<GetInfo>(dlsym(lib, "getInfo")); // приводим к указателю на фукцнию
+    if (info == nullptr)
+    {
+        throw std::runtime_error(dlerror());
+//        std::cerr << "Cannot load create function: " << dlerror() << '\n';
+        return false;
+    }
+    dlerror();
+
+    std::string* inf = info();
+
+     m_libsPaths.second.push_back(*inf);
+
+    delete inf;
+
+    dlclose(lib);
 
     return true;
 }

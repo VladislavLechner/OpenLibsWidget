@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     Widget w;
     w.show();
-    qDebug() << w.connectionToThelib();
+//    qDebug() << w.connectionToThelib();
 
 //    w.showInputWidget();
 

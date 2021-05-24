@@ -27,12 +27,12 @@ class Widget : public QWidget
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
+//    void showInputWidget();
 
-    bool connectionToThelib(/*QString path*/);
-    bool closeLib();
-    void showInputWidget();
 public slots:
+    void connectionToThelib();
     void startScanPressed();
+    void closeLib();
 
 private:
     QPushButton * m_connectToTheLib;
@@ -54,12 +54,12 @@ private:
 
 
 private:
-    bool getSumWidgetInstance();
+    bool getWidgetInstance();
     bool releaseSumWidgetInstance();
     void memoryAllocation();
     void setUpWidgets();
     void handle_eptr(std::exception_ptr eptr);
-    void setUpFileSystemModel(std::list<std::string> libsPaths, QString path);
+    void setUpFileSystemModel(std::pair< std::list<std::string>, std::list<std::string>>, QString path);
 
 };
 #endif // WIDGET_H

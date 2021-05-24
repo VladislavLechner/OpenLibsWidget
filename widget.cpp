@@ -9,53 +9,117 @@ Widget::Widget(QWidget *parent)
     connect(m_startScan, &QPushButton::clicked,
             this, &Widget::startScanPressed);
 
-//    connect(m_startScan, &QPushButton::clicked,
-//            this, &Widget::startScanPressed);
+    connect(m_connectToTheLib, &QPushButton::clicked,
+            this, &Widget::connectionToThelib);
+
+    connect(m_disconnectFromTheLib, &QPushButton::clicked,
+            this, &Widget::closeLib);
 }
 
 Widget::~Widget()
 {
 }
 
-bool Widget::connectionToThelib(/*QString path*/)
+void Widget::connectionToThelib()
 {
-    m_lib = dlopen("/home/semen/qtProjects/test/libSumWidget.so", RTLD_NOW);
+    m_disconnectFromTheLib->setEnabled(true);
+    m_connectToTheLib->setEnabled(false);
+
+    std::string pathLib = (m_inputPathForScan->text().toStdString() + boost::filesystem::path::separator + m_treeView->currentIndex().data().toString().toStdString());
+    m_lib = dlopen(pathLib.c_str(), RTLD_NOW);
     if (m_lib == nullptr)
     {
-        qDebug() << "Cannot load library: " << dlerror() << '\n';
-        return false;
+        throw std::runtime_error(dlerror());
+//        qDebug() << "Cannot load library: " << dlerror() << '\n';
+        return;
     }
     dlerror();
 
-    typedef std::string *(*GetInfo)();
-    GetInfo info = nullptr;
+    getWidgetInstance();
 
-    info = reinterpret_cast<GetInfo>(dlsym(m_lib, "getInfo")); // приводим к указателю на фукцнию
-    if (info == nullptr)
+//    typedef void *(*GetInputWidget)();
+//    GetInputWidget getInputWidget = nullptr;
+
+//    getInputWidget = reinterpret_cast<GetInputWidget>(dlsym(m_lib, "getWidgetInstance")); // приводим к указателю на фукцнию
+//    if (getInputWidget == nullptr)
+//    {
+//        throw std::runtime_error(dlerror());
+////        qDebug() << "Cannot load create function: " << dlerror() << '\n';
+//        return;
+//    }
+//    dlerror();
+
+
+//    if (m_treeView->currentIndex().data().toString().toStdString() == "libSumWidget.so")
+//    {
+//        m_sumWidget = reinterpret_cast<InputSumWidget *>(getInputWidget()); // получаем экземпляр класса
+//        if (m_sumWidget == nullptr)
+//        {
+//            throw std::runtime_error("Не удалось создать экземпляр класса SumWidget");
+////            qDebug() << "Cannot create data base" << '\n';
+//            return;
+//        }
+//        m_sumWidget->show();
+//    }
+//    else if (m_treeView->currentIndex().data().toString().toStdString() == "libFileWidget.so")
+//    {
+//        m_fileWidget = reinterpret_cast<InputFileWidget *>(getInputWidget());
+//        if (m_fileWidget == nullptr)
+//        {
+//            throw std::runtime_error("Не удалось создать экземпляр класса FileWidget");
+////            qDebug() << "Cannot create data base" << '\n';
+//            return;
+//        }
+//        m_fileWidget->show();
+//    }
+
+//    typedef std::string *(*GetInfo)();
+//    GetInfo info = nullptr;
+
+//    info = reinterpret_cast<GetInfo>(dlsym(m_lib, "getInfo")); // приводим к указателю на фукцнию
+//    if (info == nullptr)
+//    {
+//        qDebug() << "Cannot load create function: " << dlerror() << '\n';
+//        return false;
+//    }
+//    dlerror();
+
+//    std::string* t = info();
+
+//    delete t;
+
+
+
+//    dlclose(m_lib);
+
+}
+
+
+void Widget::closeLib()
+{
+    m_disconnectFromTheLib->setEnabled(false);
+    m_connectToTheLib->setEnabled(true);
+
+    if (m_fileWidget != nullptr)
     {
-        qDebug() << "Cannot load create function: " << dlerror() << '\n';
-        return false;
+        m_fileWidget->hide();
+        delete m_fileWidget;
+        m_fileWidget = nullptr;
     }
-    dlerror();
-
-    std::string t = *info();
-
+    else if (m_sumWidget != nullptr)
+    {
+        m_sumWidget->hide();
+        delete m_sumWidget;
+        m_sumWidget = nullptr;
+    }
     dlclose(m_lib);
-
-    return true;
 }
 
-
-bool Widget::closeLib()
-{
-    return dlclose(m_lib);
-}
-
-void Widget::showInputWidget()
-{
-    if (getSumWidgetInstance())
-        m_sumWidget->show();
-}
+//void Widget::showInputWidget()
+//{
+//    if (getSumWidgetInstance())
+//        m_sumWidget->show();
+//}
 
 void Widget::startScanPressed()
 {
@@ -71,24 +135,42 @@ void Widget::startScanPressed()
     }
 }
 
-bool Widget::getSumWidgetInstance()
+bool Widget::getWidgetInstance()
 {
     typedef void *(*GetInputWidget)();
     GetInputWidget getInputWidget = nullptr;
 
-    getInputWidget = reinterpret_cast<GetInputWidget>(dlsym(m_lib, "getInstance")); // приводим к указателю на фукцнию
+    getInputWidget = reinterpret_cast<GetInputWidget>(dlsym(m_lib, "getWidgetInstance")); // приводим к указателю на фукцнию
     if (getInputWidget == nullptr)
     {
-        qDebug() << "Cannot load create function: " << dlerror() << '\n';
+        throw std::runtime_error(dlerror());
+//        qDebug() << "Cannot load create function: " << dlerror() << '\n';
         return false;
     }
     dlerror();
 
-    m_sumWidget = reinterpret_cast<InputSumWidget *>(getInputWidget()); // получаем экземпляр класса
-    if (m_sumWidget == nullptr)
+
+    if (m_treeView->currentIndex().data().toString().toStdString() == "libSumWidget.so")
     {
-        qDebug() << "Cannot create data base" << '\n';
-        return false;
+        m_sumWidget = reinterpret_cast<InputSumWidget *>(getInputWidget()); // получаем экземпляр класса
+        if (m_sumWidget == nullptr)
+        {
+            throw std::runtime_error("Не удалось создать экземпляр класса SumWidget");
+//            qDebug() << "Cannot create data base" << '\n';
+            return false;
+        }
+        m_sumWidget->show();
+    }
+    else if (m_treeView->currentIndex().data().toString().toStdString() == "libFileWidget.so")
+    {
+        m_fileWidget = reinterpret_cast<InputFileWidget *>(getInputWidget());
+        if (m_fileWidget == nullptr)
+        {
+            throw std::runtime_error("Не удалось создать экземпляр класса FileWidget");
+//            qDebug() << "Cannot create data base" << '\n';
+            return false;
+        }
+        m_fileWidget->show();
     }
     return true;
 }
@@ -137,6 +219,8 @@ void Widget::setUpWidgets()
     m_layOut->addWidget(m_disconnectFromTheLib, 3,1);
 
     m_layOut->addWidget(m_treeView,2,0,1,2);
+
+    m_disconnectFromTheLib->setEnabled(false);
 }
 
 void Widget::handle_eptr(std::exception_ptr eptr)
@@ -150,10 +234,10 @@ void Widget::handle_eptr(std::exception_ptr eptr)
     }
 }
 
-void Widget::setUpFileSystemModel(std::list<std::string> libsPaths, QString path)
+void Widget::setUpFileSystemModel(std::pair< std::list<std::string>, std::list<std::string>> libsPaths, QString path)
 {
     QStringList temp;
-    for (auto x: libsPaths)
+    for (auto x: libsPaths.first)
     {
         if (x.find("/") < x.size())
         {

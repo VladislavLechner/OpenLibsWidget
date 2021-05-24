@@ -12,10 +12,10 @@ public:
     ScanDirectory() = default;
     bool checkPath(std::string path);
 
-    std::list<std::string> libsPaths() const;
+    std::pair< std::list<std::string>, std::list<std::string>> libsPaths() const;
 
 private:
-    std::list<std::string> m_libsPaths;
+    std::pair< std::list<std::string>, std::list<std::string>> m_libsPaths;
 private:
     void startScaning(std::string path);
     bool dlInfo(std::string path);
