@@ -18,6 +18,10 @@ Widget::Widget(QWidget *parent)
 
 Widget::~Widget()
 {
+//    if (m_sumWidget != nullptr)
+//        delete m_sumWidget;
+//    else if (m_fileWidget != nullptr)
+//        delete m_fileWidget;
 }
 
 void Widget::connectionToThelib()
@@ -102,14 +106,27 @@ void Widget::closeLib()
 
     if (m_fileWidget != nullptr)
     {
-        m_fileWidget->hide();
-        delete m_fileWidget;
+        m_fileWidget->close();
+//        delete m_fileWidget;
         m_fileWidget = nullptr;
     }
     else if (m_sumWidget != nullptr)
     {
-        m_sumWidget->hide();
-        delete m_sumWidget;
+        m_sumWidget->close();
+//        typedef void (*ReleaseInputWidget)(InputSumWidget* );
+//        ReleaseInputWidget getInputWidget = nullptr;
+
+//        getInputWidget = reinterpret_cast<ReleaseInputWidget>(dlsym(m_lib, "releaseWidgetInstance")); // приводим к указателю на фукцнию
+//        if (getInputWidget == nullptr)
+//        {
+//            throw std::runtime_error(dlerror());
+//    //        qDebug() << "Cannot load create function: " << dlerror() << '\n';
+//            return;
+//        }
+//        dlerror();
+//        ReleaseInputWidget(m_sumWidget);
+
+//        delete m_sumWidget;
         m_sumWidget = nullptr;
     }
     dlclose(m_lib);
@@ -124,6 +141,7 @@ void Widget::closeLib()
 void Widget::startScanPressed()
 {
     try {
+        m_connectToTheLib->setEnabled(true);
         ScanDirectory scanDir;
         scanDir.checkPath(m_inputPathForScan->text().toStdString());
         setUpFileSystemModel(scanDir.libsPaths(), m_inputPathForScan->text());
@@ -137,6 +155,11 @@ void Widget::startScanPressed()
 
 bool Widget::getWidgetInstance()
 {
+//    if (m_sumWidget != nullptr)
+//        delete m_sumWidget;
+//    else if (m_fileWidget != nullptr)
+//        delete m_fileWidget;
+
     typedef void *(*GetInputWidget)();
     GetInputWidget getInputWidget = nullptr;
 
@@ -221,6 +244,7 @@ void Widget::setUpWidgets()
     m_layOut->addWidget(m_treeView,2,0,1,2);
 
     m_disconnectFromTheLib->setEnabled(false);
+    m_connectToTheLib->setEnabled(false);
 }
 
 void Widget::handle_eptr(std::exception_ptr eptr)
