@@ -15,10 +15,12 @@
 #include <QGridLayout>
 #include <QFileSystemModel>
 #include <QTreeView>
+#include <QToolTip>
 
 #include "/home/semen/qtProjects/QtProjects/SumWidget/inputwidget.h"
 #include "/home/semen/qtProjects/QtProjects/FileWidget/inputwidget.h"
 #include "scandirectory.h"
+#include "treeview.h"
 
 class Widget : public QWidget
 {
@@ -27,7 +29,6 @@ class Widget : public QWidget
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
-//    void showInputWidget();
 
 public slots:
     void connectionToThelib();
@@ -43,7 +44,9 @@ private:
     QGridLayout * m_layOut;
 
     QFileSystemModel * m_fileModel;
-    QTreeView        * m_treeView;
+    TreeView         * m_treeView;
+
+    std::pair< std::list<std::string>, std::list<std::string>> m_libsNamesAndDescription;
 
 
     void* m_lib;
@@ -55,7 +58,6 @@ private:
 
 private:
     bool getWidgetInstance();
-    bool releaseSumWidgetInstance();
     void memoryAllocation();
     void setUpWidgets();
     void handle_eptr(std::exception_ptr eptr);

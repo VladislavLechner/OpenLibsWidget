@@ -11,10 +11,12 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     scandirectory.cpp \
+    treeview.cpp \
     widget.cpp
 
 HEADERS += \
     scandirectory.h \
+    treeview.h \
     widget.h
 
 INCLUDEPATH +=/home/semen/qtProjects/QtProjects/SumWidget/
