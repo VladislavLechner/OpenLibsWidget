@@ -92,7 +92,7 @@ bool Widget::getWidgetInstance()
 
     if (m_treeView->currentIndex().data().toString().toStdString() == "libSumWidget.so")
     {
-        m_sumWidget = reinterpret_cast<InputSumWidget *>(getInputWidget()); // получаем экземпляр класса
+        m_sumWidget = reinterpret_cast<QWidget *>(getInputWidget()); // получаем экземпляр класса
         if (m_sumWidget == nullptr)
         {
             throw std::runtime_error("Не удалось создать экземпляр класса SumWidget");
@@ -102,7 +102,7 @@ bool Widget::getWidgetInstance()
     }
     else if (m_treeView->currentIndex().data().toString().toStdString() == "libFileWidget.so")
     {
-        m_fileWidget = reinterpret_cast<InputFileWidget *>(getInputWidget());
+        m_fileWidget = reinterpret_cast<QMainWindow *>(getInputWidget());
         if (m_fileWidget == nullptr)
         {
             throw std::runtime_error("Не удалось создать экземпляр класса FileWidget");

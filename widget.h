@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QMainWindow>
 #include <stdio.h>
 #include <iostream>
 #include <exception>
@@ -17,8 +18,8 @@
 #include <QTreeView>
 #include <QToolTip>
 
-#include "/home/semen/qtProjects/QtProjects/SumWidget/inputwidget.h"
-#include "/home/semen/qtProjects/QtProjects/FileWidget/inputwidget.h"
+//#include "/home/semen/qtProjects/QtProjects/SumWidget/inputwidget.h"
+//#include "/home/semen/qtProjects/QtProjects/FileWidget/inputwidget.h"
 #include "scandirectory.h"
 #include "treeview.h"
 
@@ -51,8 +52,10 @@ private:
 
     void* m_lib;
     void* m_libInfo;
-    InputSumWidget* m_sumWidget = nullptr;
-    InputFileWidget * m_fileWidget = nullptr;
+//    InputSumWidget* m_sumWidget = nullptr;
+//    InputFileWidget * m_fileWidget = nullptr;
+    QWidget* m_sumWidget = nullptr;
+    QMainWindow * m_fileWidget = nullptr;
 
 
 
