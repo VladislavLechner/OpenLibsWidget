@@ -19,15 +19,23 @@ Widget::Widget(QWidget *parent)
 
 Widget::~Widget()
 {
+//    if (m_lib != nullptr)
+//        qDebug() << dlclose(m_lib);
+//    else
+//        qDebug() << "FFFFFFFFFFF";
+    qDebug() << "Widget destructor";
+//    m_widget->setParent(this);
 }
 
 void Widget::connectionToThelib()
 {
     m_disconnectFromTheLib->setEnabled(true);
     m_connectToTheLib->setEnabled(false);
+//    void* lib;
 
     std::string pathLib = (m_inputPathForScan->text().toStdString() + boost::filesystem::path::separator + m_treeView->currentIndex().data().toString().toStdString());
-    m_lib = dlopen(pathLib.c_str(), RTLD_NOW);
+    m_lib = dlopen(pathLib.c_str(), RTLD_LAZY);
+//    qDebug() << "Here";
     if (m_lib == nullptr)
     {
         throw std::runtime_error(dlerror());
@@ -36,6 +44,9 @@ void Widget::connectionToThelib()
     dlerror();
 
     getWidgetInstance();
+//            dlclose(m_lib);
+//    else
+//        qDebug() << dlerror();
 
 }
 
@@ -45,17 +56,11 @@ void Widget::closeLib()
     m_disconnectFromTheLib->setEnabled(false);
     m_connectToTheLib->setEnabled(true);
 
-    if (m_fileWidget != nullptr)
-    {
-        m_fileWidget->close();
-        m_fileWidget = nullptr;
-    }
-    else if (m_sumWidget != nullptr)
-    {
-        m_sumWidget->close();
-        m_sumWidget = nullptr;
-    }
-    dlclose(m_lib);
+    releaseWidgetInstance(m_widget);
+
+    qDebug() << dlclose(m_lib);
+    m_lib = nullptr;
+
 }
 
 
@@ -77,10 +82,10 @@ void Widget::startScanPressed()
 
 bool Widget::getWidgetInstance()
 {
-    typedef void *(*GetInputWidget)();
+    typedef void *(*GetInputWidget)(std::string);
     GetInputWidget getInputWidget = nullptr;
 
-    getInputWidget = reinterpret_cast<GetInputWidget>(dlsym(m_lib, "getWidgetInstance")); // приводим к указателю на фукцнию
+    getInputWidget = reinterpret_cast<GetInputWidget>(dlsym(m_lib, "getWidgetInstance"));
     if (getInputWidget == nullptr)
     {
         throw std::runtime_error(dlerror());
@@ -89,28 +94,33 @@ bool Widget::getWidgetInstance()
     }
     dlerror();
 
-
-    if (m_treeView->currentIndex().data().toString().toStdString() == "libSumWidget.so")
+//    m_widget = reinterpret_cast<QWidget *>(m_widget);
+    m_widget = reinterpret_cast<QWidget *>(getInputWidget(m_inputPathForScan->text().toStdString()));
+    if (m_widget == nullptr)
     {
-        m_sumWidget = reinterpret_cast<QWidget *>(getInputWidget()); // получаем экземпляр класса
-        if (m_sumWidget == nullptr)
-        {
-            throw std::runtime_error("Не удалось создать экземпляр класса SumWidget");
-            return false;
-        }
-        m_sumWidget->show();
+        throw std::runtime_error("Не удалось открыть библиотеку");
+        return false;
     }
-    else if (m_treeView->currentIndex().data().toString().toStdString() == "libFileWidget.so")
-    {
-        m_fileWidget = reinterpret_cast<QMainWindow *>(getInputWidget());
-        if (m_fileWidget == nullptr)
-        {
-            throw std::runtime_error("Не удалось создать экземпляр класса FileWidget");
-            return false;
-        }
-        m_fileWidget->show();
-    }
+    m_widget->show();
+    qDebug() << m_widget;
     return true;
+}
+
+void Widget::releaseWidgetInstance(QWidget *instance)
+{
+    typedef void (*ReleaseInputWidget)(QWidget* );
+    ReleaseInputWidget releaseInputWidget = nullptr;
+
+    releaseInputWidget = reinterpret_cast<ReleaseInputWidget>(dlsym(m_lib, "releaseWidgetInstance"));
+    if (releaseInputWidget == nullptr)
+    {
+        throw std::runtime_error(dlerror());
+//        qDebug() << "Cannot load create function: " << dlerror() << '\n';
+        return;
+    }
+    dlerror();
+
+    releaseInputWidget(instance);
 }
 
 

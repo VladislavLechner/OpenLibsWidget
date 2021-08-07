@@ -15,6 +15,7 @@ SOURCES += \
     widget.cpp
 
 HEADERS += \
+    ../AbstractClasses/abstractclasses.h \
     scandirectory.h \
     treeview.h \
     widget.h
