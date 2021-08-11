@@ -101,8 +101,8 @@ bool Widget::getWidgetInstance()
         throw std::runtime_error("Не удалось открыть библиотеку");
         return false;
     }
-    m_widget->show();
     qDebug() << m_widget;
+    m_widget->show();
     return true;
 }
 
