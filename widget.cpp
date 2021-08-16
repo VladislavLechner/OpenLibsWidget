@@ -23,6 +23,8 @@ Widget::~Widget()
 //        qDebug() << dlclose(m_lib);
 //    else
 //        qDebug() << "FFFFFFFFFFF";
+    if (m_widget != nullptr)
+        releaseWidgetInstance(m_widget);
     qDebug() << "Widget destructor";
 //    m_widget->setParent(this);
 }
@@ -35,7 +37,6 @@ void Widget::connectionToThelib()
 
     std::string pathLib = (m_inputPathForScan->text().toStdString() + boost::filesystem::path::separator + m_treeView->currentIndex().data().toString().toStdString());
     m_lib = dlopen(pathLib.c_str(), RTLD_LAZY);
-//    qDebug() << "Here";
     if (m_lib == nullptr)
     {
         throw std::runtime_error(dlerror());
@@ -43,6 +44,7 @@ void Widget::connectionToThelib()
     }
     dlerror();
 
+//    qDebug() << "Here";
     getWidgetInstance();
 //            dlclose(m_lib);
 //    else
@@ -57,6 +59,7 @@ void Widget::closeLib()
     m_connectToTheLib->setEnabled(true);
 
     releaseWidgetInstance(m_widget);
+    m_widget = nullptr;
 
     qDebug() << dlclose(m_lib);
     m_lib = nullptr;
@@ -102,6 +105,7 @@ bool Widget::getWidgetInstance()
         return false;
     }
     qDebug() << m_widget;
+//    qDebug() << "Here!";
     m_widget->show();
     return true;
 }
@@ -115,11 +119,10 @@ void Widget::releaseWidgetInstance(QWidget *instance)
     if (releaseInputWidget == nullptr)
     {
         throw std::runtime_error(dlerror());
-//        qDebug() << "Cannot load create function: " << dlerror() << '\n';
         return;
     }
     dlerror();
-
+    instance->close();
     releaseInputWidget(instance);
 }
 

@@ -49,8 +49,8 @@ private:
     std::pair< std::list<std::string>, std::list<std::string>> m_libsNamesAndDescription;
 
 
-    void* m_lib;
-    void* m_libInfo;
+    void* m_lib = nullptr;
+    void* m_libInfo = nullptr;
 
     QWidget * m_widget = nullptr;
 
