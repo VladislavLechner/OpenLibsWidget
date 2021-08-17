@@ -18,7 +18,6 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
     QPoint pt = event->pos();
     QModelIndex index = indexAt(pt);
 
-//    qDebug() << pt << rect() << index.data().toString();
 
     for (auto x1 = m_libsNamesAndDescription.first.begin(), x2 = m_libsNamesAndDescription.second.begin();
          x1 != m_libsNamesAndDescription.first.end() && x2 != m_libsNamesAndDescription.second.end(); ++x1,++x2)
@@ -31,7 +30,6 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
 
         if (index.data().toString() == QString::fromStdString(*x1))
         {
-//            std::cout << index.data().toString().toStdString() << "    " << *x1 << std::endl;
             setToolTip(QString::fromStdString(*x2));
             break;
         }

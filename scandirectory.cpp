@@ -48,7 +48,6 @@ bool ScanDirectory::dlInfo(std::string path)
     if (lib == nullptr)
     {
         throw std::runtime_error(dlerror());
-//        std::cerr << "Cannot load library: " << dlerror() << '\n';
         return false;
     }
     dlerror();
@@ -60,7 +59,6 @@ bool ScanDirectory::dlInfo(std::string path)
     if (info == nullptr)
     {
         throw std::runtime_error(dlerror());
-//        std::cerr << "Cannot load create function: " << dlerror() << '\n';
         return false;
     }
     dlerror();
